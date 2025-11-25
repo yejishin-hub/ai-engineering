@@ -11,7 +11,7 @@ import gym
 env = gym.make('CartPole-v0')
 
 # tensorflow 2.x => placeholder attribute deleted
-tf.compat.v1.disable_v2_behavior()
+# tf.compat.v1.disable_v2_behavior()
 
 # Constants defining our neural network
 learning_rate = 1e-1
@@ -19,19 +19,23 @@ input_size = env.observation_space.shape[0]
 output_size = env.action_space.n
 
 # AttributeError: module 'tensorflow' has no attribute 'placeholder'
-X = tf.compat.v1.placeholder(tf.compat.v1.float32, [None, input_size], name="input_x")
+# X = tf.placeholder(tf.float32, [None, input_size], name="input_x")
+X = tf.Variable(tf.zeros([None, input_size], name="input_x"))
 
 # tf.enable_v2_behavior()
 
 # First layer of weights
-W1 = tf.get_variable("W1", shape=[input_size, output_size],
-                     initializer=tf.compat.v2.contrib.layers.xavier_initializer())
-                     #initializer=tf.truncated_normal_initializer(stddev=0.1))
-outputs, states = tf.compat.v1.nn.static_rnn(lstm_cells, _X, dtype=tf.float32)
+#W1 = tf.get_variable("W1", shape=[input_size, output_size],
+#                     initializer=tf.contrib.layers.xavier_initializer())
+W1 = tf.Variable("W1", shape=[input_size, output_size],
+                     initializer=tf.contrib.layers.xavier_initializer())
+                     #initializer=tf.keras.initializers.GlorotUniform())
+# outputs, states = tf.compat.v1.nn.static_rnn(lstm_cells, _X, dtype=tf.float32)
 Qpred = tf.matmul(X, W1)
 
 # We need to define the parts of the network needed for learning a policy
-Y = tf.compat.v1.placeholder(shape=[None, output_size], dtype=tf1.float32)
+#Y = tf.placeholder(shape=[None, output_size], dtype=tf.float32)
+Y = tf.Variable(shape=[None, output_size], dtype=tf1.float32)
 
 # Loss function
 loss = tf.reduce_sum(tf.square(Y - Qpred))
